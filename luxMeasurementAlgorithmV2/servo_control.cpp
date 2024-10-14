@@ -10,6 +10,13 @@ Servo horizontal;  // Create servo object for horizontal movement
 
 int h0, v0;  // Global variables for angle positions
 
+const int STEP_ANGLE = 5;
+const int V_STEPS = 90 / STEP_ANGLE + 1;  // 18 steps from 0 to 90
+const int H_STEPS = 180 / STEP_ANGLE + 1; // 36 steps from 0 to 180
+
+// 2D array to store lux values for each v and h angle
+int measurements[V_STEPS][H_STEPS];
+
 void initServos() {
     ESP32PWM::allocateTimer(0);
     ESP32PWM::allocateTimer(1);
@@ -56,6 +63,7 @@ void scanTable(int vstart, int vend, int hstart, int hend) {
         delay(100);
         int lux = readlight();
         table += String("{") + v + ", " + h + ", " + lux + "}";
+        measurements[v/5][h/5] = lux; // Store the lux measurement
         if (h < hend) table += ", ";
       }
     } else {
@@ -64,6 +72,7 @@ void scanTable(int vstart, int vend, int hstart, int hend) {
         delay(100);
         int lux = readlight();
         table += String("{") + v + ", " + h + ", " + lux + "}";
+        measurements[v/5][h/5] = lux; // Store the lux measurement
         if (h > hstart) table += ", ";
       }
     }
